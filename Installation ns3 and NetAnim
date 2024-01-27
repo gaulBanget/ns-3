@@ -1,0 +1,71 @@
+First ns-3 tutorial
+Ns-3 provides a tutorial as well in which it explains in more detail the concepts described before. Please go over the tutorial there:
+
+https://www.nsnam.org/docs/tutorial/html/conceptual-overview.html
+
+The official tutorial is a not very comfortably formatted document, yet it is important to read the text on this page as it will save you A LOT of struggle later down the line.
+
+1st Step:
+Instalation ns-3.36.1
+1. $ sudo apt update  : update apt
+2. $ sudo apt install g++ python3 python3-dev pkg-config sqlite3 cmake python3-setuptools git qtbase5-dev qtchooser qt5-qmake qtbase5-dev-tools gir1.2-goocanvas-2.0 python3-gi python3-gi-cairo python3-pygraphviz gir1.2-gtk-3.0 ipython3 openmpi-bin openmpi-common openmpi-doc libopenmpi-dev autoconf cvs bzr unrar gsl-bin libgsl-dev libgslcblas0 wireshark tcpdump sqlite sqlite3 libsqlite3-dev  libxml2 libxml2-dev libc6-dev libc6-dev-i386 libclang-dev llvm-dev automake python3-pip libxml2 libxml2-dev libboost-all-dev 
+3. $ wget -c https://www.nsnam.org/releases/ns-allinone-3.36.1.tar.bz2 
+4. $ tar jxvf ns-allinone-3.36.1.tar.bz2
+5. $ ./ns3 configure --enable-examples --enable-tests
+6. $ /ns3 build
+7. test installation
+    $ ./ns3 run hello-simulator
+output:
+Hello Simulator
+7. $ cd ns-3.36.1/
+   $./ns3 configure --enable-python-bindings
+
+2nd Step:
+Below is a short summary of the steps:
+1. The scratch/ folder inside your ns-3 folder is where you can write small C++ scripts which use ns-3. In this tutorial you are going to make a very simple one.
+2. Copy over the source file first.cc from the examples folder to your scratch folder:
+cp examples/tutorial/first.cc scratch/first.cc
+
+3. Study and understand scratch/first.cc. The way a ns-3 program is structured is effectively the following steps:
+3.1. Create nodes
+3.2. Install net-devices on the nodes to give them a way to reach each other
+3.3. Install the Internet stack on the nodes
+3.4. Set the IP addresses for the IP interfaces of the net-devices (because the Internet stack wants this, net-devices themselves don't need an IP address to function)
+3.5. Install applications on the nodes
+3.6. Run the simulator
+3.7. Collect results
+3.8. Exit
+
+4. Build ns-3 with ./ns3:
+./ns3 
+
+5. Run the scratch main with ./ns3:
+./ns3 --run scratch/first
+Output:
+At time +2s client sent 1024 bytes to 10.1.1.2 port 9
+At time +2.00369s server received 1024 bytes from 10.1.1.1 port 49153
+At time +2.00369s server sent 1024 bytes to 10.1.1.1 port 49153
+At time +2.00737s client received 1024 bytes from 10.1.1.2 port 9
+
+6. Now i have modified first.cc to work with NetAnim application. !st open first.cc and add these line into the first.cc before line Simulator::Run (); and then compile first.cc (step number 5 above ./ns3 ...)
+ApplicationContainer clientApps = echoClient.Install (nodes.Get (0));
+  clientApps.Start (Seconds (2.0));
+  clientApps.Stop (Seconds (10.0));
+  
+  //Set anim
+  AnimationInterface anim ("anim1.xml");
+  anim.SetConstantPosition(nodes.Get(0), 10.0, 10.0);
+  anim.SetConstantPosition(nodes.Get(1), 30.0, 30.0);
+  //anim.SetConstantPosition(nodes.Get(2), 80.0, 80.0);
+
+  Simulator::Run ();
+  Simulator::Destroy ();
+  return 0;
+
+7. open NetAnim and open XML file of first.cc whichis named anim1.xml. note: NetAnim installed automatically when installed ns-3.36 (1st step). open NetAnim with CLI ./NetAnim
+$directory NetAnim.
+$./NetAnim
+open file anim1.xml
+
+7. continue to the next tutorial file such as second.cc (wired+wireless), third.cc (Access Point mobility), fourth.cc
+./ns3 --run scratch/first
